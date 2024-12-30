@@ -2,7 +2,7 @@
 '데이터베이스 시스템(7판)'을 읽고 공부하며 정리하는 저장소
 
 # 참고 서적 및 강의
-참고서적 : [Database System Concepts, Abraham SilberSchatz, 10판](https://www.db-book.com)
+참고서적 : [Database System Concepts, Abraham SilberSchatz, 10판](https://www.db-book.com)  
 참고강의 : [이화여대 데이터베이스 강의](http://www.kocw.net/home/cview.do?mty=p&kemId=1064626)
 
 # 주제
