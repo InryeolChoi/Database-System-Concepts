@@ -82,7 +82,7 @@ ID
 
 릴레이션끼리는 서로 연관성을 가질 수 있다.
 
-![image.png](./images/image.png)
+![image.png](./images/image2_1.png)
 
 왼쪽의 릴레이션을 A, 오른쪽의 릴레이션을 B라고 하자. B는 A를 참조하고 있다.
 
@@ -99,7 +99,7 @@ ID
 
 이를 스키마 다이어그램이라는 그림으로 표현할 수 있다.
 
-![image.png](./images/image2.png)
+![image.png](./images/image2_2.png)
 
 주의) 스키마 다이어그램과 ERD(개체-관계 다이어그램)은 다르다!
 
@@ -250,6 +250,7 @@ $$
 
 - **R ÷ S**로 표현.
 - 두 릴레이션 **R**과 **S**에서 **S**가 제공하는 모든 값을 만족하는 **R**의 값들을 반환.
+![image3.png](./images/image2_3.png)
 
 ### 배정 연산
 
