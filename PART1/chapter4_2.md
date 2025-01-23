@@ -260,3 +260,404 @@ Assertion은 다음 조건을 만족해야 함
 - 복잡한 Assertion이 많을수록 데이터베이스 성능에 부정적인 영향을 미칠 수 있음.
 - 대부분의 데이터베이스 시스템은 Assertion을 지원하지 않음.
     - 이 경우 트리거(trigger)를 사용하여 동일한 기능을 구현할 수 있음.
+
+# SQL의 데이터 타입
+
+> SQL이 추가로 지원하는 데이터 타입과 사용자 정의 타입을 알아보자.
+> 
+
+## 날짜와 시간
+
+- `date, time` 그리고 둘을 합친 `timestamp`가 존재
+- 이외에도 몇 가지 유용한 함수들이 제공.
+
+```sql
+CREATE TABLE datetime_example (
+    id SERIAL PRIMARY KEY,
+    event_date DATE,
+    event_time TIME,
+    event_timestamp TIMESTAMP
+);
+
+-- 현재 날짜를 `event_date`, 현재 시간을 `event_time`, 현재 타임스탬프를 `event_timestamp`에 삽입
+INSERT INTO datetime_example (event_date, event_time, event_timestamp)
+VALUES (current_date, current_time, localtimestamp);
+
+-- 특정 날짜와 시간을 지정해서 삽입
+INSERT INTO datetime_example (event_date, event_time, event_timestamp)
+VALUES ('2025-01-17', '12:30:00', '2025-01-17 12:30:00');
+
+-- 현재 날짜에 7일을 더한 결과
+SELECT current_date + INTERVAL '7 days' AS one_week_later;
+
+-- 현재 타임스탬프에서 2시간을 뺀 결과
+SELECT localtimestamp - INTERVAL '2 hours' AS two_hours_ago;
+
+-- 날짜 차이를 계산
+SELECT event_date, current_date - event_date AS days_difference
+FROM datetime_example;
+
+-- 시간 차이를 계산
+SELECT event_time, current_time - event_time AS time_difference
+FROM datetime_example;
+```
+
+## 타입 변환 및 서식 함수
+
+1. CAST 함수
+
+**데이터의 타입을 변환할 때 사용, 어떤 타입으로 바꿀지 사용자 맘대로!**
+
+다양한 데이터 타입 간의 변환을 지원하며, ANSI 표준 SQL 함수입니다.
+
+```sql
+CAST(expression AS target_data_type)
+```
+
+예시는 다음과 같다.
+
+```sql
+-- 숫자를 문자열로 변환
+SELECT CAST(123 AS VARCHAR(10)) AS string_value;
+
+-- 문자열을 숫자로 변환
+SELECT CAST('456' AS INTEGER) AS integer_value;
+
+-- 날짜를 문자열로 변환
+SELECT CAST(GETDATE() AS VARCHAR(20)) AS date_as_string;
+```
+
+1. 형식 지정 함수
+
+**숫자를 문자로 바꾸거나, 문자를 숫자로 바꾸는 함수**
+
+```sql
+// MySQL의 format() 함수
+-- FORMAT(number, decimal_places[, locale])
+
+SELECT FORMAT(12345.6789, 2);  -- "12,345.68"
+SELECT FORMAT(12345.6789, 2, 'de_DE');  -- "12.345,68" (독일 형식)
+```
+
+```sql
+// PostgreSQL의 to_char() 함수
+-- TO_CHAR(expression, format)
+
+SELECT TO_CHAR(12345.6789, '99999.99') AS formatted_number;  -- "12345.68"
+SELECT TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD') AS formatted_date;  -- "2025-01-19"
+```
+
+1. **COALESCE 함수**
+
+null 값을 어떻게 출력할지 선택해야 할 때 쓰는 함수.
+
+```sql
+SELECT ID, COALESCE(salary, 0) as salary from instructor  
+```
+
+그러나 이 함수의 경우 모든 인자가 동일한 타입이어야 한다. 즉 salary의 null 값을 숫자 0으로는 표기할 수 있어도, 문자열 “N/A”로는 표기할 수 없다.
+
+1. **decode 함수**
+
+조건에 따라 값을 반환. IF-THEN-ELSE와 유사.
+
+```sql
+SELECT ID, decode (salary, null, "N/A", salary) as salary from instructor  
+```
+
+위에서 설명했듯, 타입의 문제에 있어서 COALSCE 함수보다 자유롭다.
+
+## 기본값
+
+릴레이션을 만들 때`(create table)`, 각 속성의 기본값을 지정해 줄 수 있다.
+
+```sql
+create table student (
+	ID varchar (5),
+	name varchar (20) not null,
+	dept_name varchar (20),
+	**tot_cred numeric(3, 0) default 0,**
+	primary key(ID)
+); 
+```
+
+## 대형 객체 타입
+
+이미지, 동영상 등 비정형 데이터를 릴레이션에 넣을 때 쓰는 타입
+
+```sql
+CREATE TABLE media_content (
+    id INT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description CLOB, -- 대용량 텍스트 데이터를 저장
+    media_file BLOB   -- 이미지, 비디오와 같은 바이너리 데이터를 저장
+);
+```
+
+- LOB는 Large OBject를 의미한다.
+- BLOB = Binary Large OBject
+- CLOB = Character Large OBject
+
+이러한 대형 객체는 다루는데 있어서 효율적인 방법이 필요하다.
+
+- 대형객체는 그 크기가 크기 때문에, DB에서 내 컴퓨터의 메모리로 가져오면 메모리 부족 문제 또는 성능 저하를 초래할 수 있음.
+
+따라서 Locator(위치자)의 개념을 도입한다.
+
+- Locator는 대용량 객체의 **참조 포인터(위치 정보)** 역할을 합니다.
+- SQL 쿼리를 통해 대용량 객체 전체가 아닌 **locator**만 가져옵니다.
+- 운영체제에서 `read()` 시스템 콜을 이용하는 것과 비슷한 원리라고 생각하면 된다.
+
+## 고유 타입
+
+- 사용자가 직접 정의하는 사용자 정의 타입의 일종
+- create type 절을 사용한다.
+
+```sql
+create type Dollars as numeric(12, 2) final;
+create type Pounds as numeric(12, 2) final;
+```
+
+만약, Dollars와 Pounds를 이용해서 릴레이션을 만든다고 해보자.
+
+```sql
+CREATE table department (
+	dept_name varchar (20),
+	building varchar (15),
+	budget Dollars
+);
+```
+
+이때 budget의 값을 Pounds형의 새 변수에 할당하려고 하면 오류가 날 수밖에 없다.
+
+또한 budget의 값에 숫자를 직접 더하는 것 또한 오류의 위험성이 존재한다.
+
+만약 사용자가 만든 타입을 삭제하거나 변경하고 싶으면, `drop type`과 `alter type`을 쓰면 된다.
+
+```sql
+-- 값 'excited'를 'happy' 뒤에 추가
+ALTER TYPE mood ADD VALUE 'excited' AFTER 'happy';
+
+-- 'sad'를 'unhappy'로 이름 변경
+ALTER TYPE mood RENAME VALUE 'sad' TO 'unhappy';
+```
+
+과거에는 사용자 정의 타입이 없었고, 도메인이라는 것이 존재.
+
+```sql
+create domain DDollars as numeric(12,2) not null;
+
+create domain YearlySalary numeric(8,2)
+constraint salary_value_test
+check (value >= 29000.00);
+
+create domain degree_level varchar(10)
+constraint degree_level_test
+check (value in ('Bachelors', 'Masters', 'Doctorate'));
+```
+
+- **도메인**은 기본 타입에 제약 조건을 추가하여 데이터 무결성을 보장하며, 테이블 속성 타입으로 활용 가능.
+- **사용자 정의 타입**은 제약 조건을 정의할 수 없으나, 프로시저나 함수 등 SQL 확장에서 유용하게 사용.
+- 도메인은 check 및 in 절을 활용하여 값의 범위와 조건을 지정 가능.
+
+## 고유 키 값의 생성
+
+**유일 키와 데이터 타입**
+
+- 일부 기본 키(primary key)는 실제 현실 세계 데이터를 저장 (dept_name과 같은 속성).
+- 일부는 시스템에서 식별을 위해 생성된 값 (ID와 같은 속성).
+- 따라서 새로운 값을 생성할 때, 기존의 키 값과 중복되지 않도록 관리하는 것이 중요.
+
+**수동 관리 방식의 한계**
+
+- 새로운 ID 값을 생성하려면 기존의 모든 ID 값을 검사해야 하며, 이는 시스템 성능을 저하시킬 수 있음.
+- 별도의 테이블을 두고 현재까지 사용된 가장 큰 ID 값을 기록한 후, 새로운 값이 필요할 때 이를 증가시키는 방식도 있음. 그러나 이러한 방식은 관리에 추가적인 복잡성을 야기함.
+
+**자동 관리 방식**
+
+현대 데이터베이스 시스템에서는 유일 키 값을 자동으로 관리할 수 있는 기능을 제공한다. 이는 데이터베이스 시스템과 버전에 따라 구문이 다를 수 있음.
+
+**데이터베이스별 키 생성 방식**
+
+```sql
+// 예시 : postgreSQL**
+-- serial 데이터 타입 사용.
+-- 자동으로 고유 식별자를 생성.
+
+ID serial
+```
+
+```sql
+// MySQL
+-- auto increment 사용.	
+
+ID int auto_increment
+```
+
+**Sequence 객체를 활용한 고유 값 생성**
+
+- 많은 데이터베이스는 create sequence 구문을 지원.
+- Sequence는 특정 릴레이션과 독립된 카운터 객체로, 다음 값을 생성하여 여러 릴레이션에서 고유 식별자를 생성 가능.
+
+```sql
+create sequence id_sequence
+  start with 1
+  increment by 1;
+
+select nextval('id_sequence');
+```
+
+## Create Table의 확장
+
+SQL에서는 Create Table에 추가적인 기능을 부여하는 경우도 있다.
+
+1. `Create Table like` 
+
+기존 테이블과 동일한 스키마를 가진 테이블을 생성하려면 `CREATE TABLE LIKE` 구문을 쓴다.
+
+```sql
+-- temp_instructor는 instructor와 동일한 스키마를 가진 새 테이블로 생성됨.
+create table temp_instructor like instructor
+```
+
+1. `create table … as` 
+
+임시 테이블을 만들 때 사용. 주로 복잡한 쿼리 결과를 저장하기 위한 용도
+
+```sql
+CREATE TABLE t1 AS
+(SELECT *
+ FROM instructor
+ WHERE dept_name = 'Music')
+WITH DATA;
+```
+
+1. `with data`
+- **WITH DATA**: 데이터를 포함하여 테이블 생성.
+    - WITH DATA가 생략되면 구현에 따라 데이터 없이 테이블만 생성될 수도 있음.
+    - 컬럼 이름과 데이터 유형은 기본적으로 쿼리 결과에서 자동으로 추론됨.
+    - 명시적으로 컬럼 이름을 지정하려면 테이블 생성 시 정의 가능.
+- **CREATE VIEW와의 차이점**
+    - CREATE TABLE ... AS는 테이블의 내용을 생성 시 고정.
+    - 반면 CREATE VIEW는 쿼리 결과를 동적으로 반영.
+
+## 스키마, 카탈로그, 환경
+
+초기 데이터베이스 시스템은 단일 구조를 가지고 있었음.
+
+그러나 점점 시스템이 커지면서, 이름 충돌 방지를 위해 사용자 간 조정이 필요해짐
+
+따라서 현대의 데이터베이스 시스템(DBMS)는 다음과 같은 구조를 가지게 됨.
+
+**현대 데이터베이스의 3단계 계층 구조**
+
+- **Catalog**(카탈로그): 최상위 계층.
+- **Schema**(스키마): 카탈로그 내에 포함. SQL 객체(테이블, 뷰 등)가 저장됨.
+
+(일부 DBMS에서는 “Catalog” 대신 “Database”라는 용어를 사용.)
+
+- **Relations**(관계): 스키마 내에서 관리.
+
+그렇다면, 계층구조를 사용한 릴레이션의 진짜 이름은?
+
+```sql
+catalog5.univ_schema.course
+
+/*
+카탈로그를 생략하면, 현재 연결의 기본 카탈로그가 사용됨.
+예: 기본 카탈로그가 catalog5이면 univ_schema.course로 동일한 관계 식별 가능.
+
+기본 스키마에 있는 관계라면, 스키마 이름도 생략 가능.
+예: 기본 카탈로그가 catalog5, 기본 스키마가 univ_schema일 경우, 
+단순히 course로 관계 식별 가능.
+*/
+```
+
+ ****
+
+**계층 구조의 특징과 이점**
+
+- 사용자가 데이터베이스에 연결하려면 사용자 이름과 비밀번호로 인증 필요.
+- 각 사용자에게는 기본 카탈로그와 스키마가 설정됨.
+    - 사용자가 데이터베이스에 연결하면, 기본 카탈로그와 스키마가 연결 컨텍스트에 설정됨.
+- 이는 운영체제의 홈 디렉터리 개념과 유사.
+
+- 이러한 다중 계층구조는 서로 다른 애플리케이션이나 사용자가 이름 충돌 걱정 없이 독립적으로 작업할 수 있도록 만들어줌.
+- 동일 데이터베이스 시스템에서 여러 버전(예: 프로덕션 및 테스트 버전)의 애플리케이션 운영 가능.
+
+- **기본 카탈로그와 스키마, 그리고 사용자 식별자**(권한 식별자)는 기본적으로 각 데이터베이스 연결을 설정하는 SQL 환경의 일부임.
+- 모든 SQL 명령문 (DDL, DML 포함)은 지정된 스키마 컨텍스트 내에서 동작.
+
+**스키마와 카탈로그 생성/삭제**
+
+- **스키마**: CREATE SCHEMA, DROP SCHEMA 명령어로 생성/삭제 가능.
+    - 대부분의 DBMS에서는 사용자 계정 생성 시 자동으로 스키마도 생성.
+    - 스키마 이름은 사용자 계정 이름과 동일하며, 기본 카탈로그에 생성.
+- **카탈로그**: 생성 및 삭제는 SQL 표준이 아닌, DBMS 구현에 따라 달라짐.
+
+# SQL의 인덱스 정리
+
+## 인덱스란?
+
+- 데이터베이스에서 특정 속성 값으로 튜플을 효율적으로 찾을 수 있도록 도와주는 데이터 구조.
+- 전체 데이터를 순차적으로 검색하지 않고, 원하는 값을 빠르게 찾을 수 있음.
+- 예시: Physics 학과의 강사를 찾을 때, 모든 튜플을 확인하지 않고 dept_name 속성에 인덱스를 사용하여 바로 접근 가능.
+
+## **인덱스의 특징**
+
+- **중복 데이터 구조**: 인덱스는 논리 스키마(logical schema)가 아닌 물리 스키마(physical schema)의 일부로, 데이터베이스의 정확성에 반드시 필요한 것은 아님.
+- **효율성**: 쿼리 및 업데이트 작업의 처리 속도를 향상.
+- 기본 키(primary key) 및 외래 키(foreign key)와 같은 무결성 제약 조건을 효율적으로 강제.
+- **비용**: 인덱스는 추가적인 저장 공간을 사용하며, 업데이트 시 성능에 영향을 줄 수 있음.
+
+## **인덱스 생성 및 삭제**
+
+**인덱스 생성 명령어**
+
+```sql
+create index <인덱스 이름> on <테이블 이름> (<속성 리스트>);
+```
+
+- 예를 들어, dept_name 속성에 인덱스를 생성한다고 해보자.
+
+```sql
+create index dept_index on instructor (dept_name);
+```
+
+**고유 인덱스(unique index)**
+
+- 특정 속성이나 속성 조합이 후보 키(candidate key)임을 선언.
+
+```sql
+create unique index <인덱스 이름> on <테이블 이름> (<속성 리스트>);
+```
+
+- 예시
+
+```sql
+create unique index dept_index on instructor (dept_name);
+```
+
+후보 키가 아닌 속성에 고유 인덱스를 선언하면 에러 발생.
+
+**인덱스 삭제 명령어**
+
+```sql
+drop index <인덱스 이름>;
+```
+
+## **인덱스 활용**
+
+- SQL 쿼리에서 인덱스가 도움이 되는 경우, 쿼리 프로세서가 자동으로 인덱스를 사용하여 성능을 최적화.
+- 예: dept_name = 'Music' 조건을 만족하는 튜플을 찾을 때, 인덱스를 활용하여 전체 데이터를 읽지 않음.
+
+## **인덱스 유형 및 클러스터링**
+
+- **인덱스 유형**: B+-트리, 해시 인덱스 등 다양한 인덱스 유형을 명시적으로 지정 가능(시스템에 따라 다름).
+- **클러스터링 인덱스(Clustered Index)**: 테이블의 튜플을 특정 인덱스의 검색 키(search key)를 기준으로 정렬.
+- 하나의 테이블에 하나의 클러스터링 인덱스만 생성 가능.
+
+## **자동 인덱스 관리**
+
+- 데이터베이스 시스템은 자동으로 일부 인덱스를 생성할 수 있음.
+- 그러나 인덱스 생성 및 삭제는 대부분의 시스템에서 프로그래머가 명시적으로 제어.
