@@ -13,6 +13,11 @@
  - SQL의 인덱스 정의, 권한
 [chapter5](./PART1/chapter5.md) : 고급 SQL
 
+## PART2
+`데이터베이스 설계에 대한 단원.` 
+[chapter6](./PART2/chapter6.md) : ERD 설계
+[chapter7](./PART2/chapter7.md) : 관계형 DB 설계
+
 ## PracticeSet
 `연습문제를 풀어본 기록`
 [chapter2](./PracticeSet/chapter2.md) : 관계형 모델이란?  
