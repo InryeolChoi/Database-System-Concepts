@@ -1,4 +1,4 @@
-# SQL이란?
+# 3. SQL이란?
 
 > SQL(Structured Query Language)은 관계형 데이터베이스 관리 시스템(RDBMS)에서 데이터를 관리하고 조작하기 위해 설계된 프로그래밍 언어.
 > 
