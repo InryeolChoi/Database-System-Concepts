@@ -9,21 +9,7 @@
 
 ## 접근 방식
 
-**동적 SQL (dynamic SQL)** 
-
-- 실행 시점에 SQL 문장이 동적으로 생성되거나 실행되는 형태
-- SQL을 실행 시점에 생성할 수 있어 유연성이 높다.
-- 사용자 입력, 조건 등에 따라 SQL 문장이 변경될 수 있다.
-- 주로 복잡한 조건이나 다양한 사용자 입력을 처리할 때 사용된다.
-- 그러나 실행 시점에 오류가 발생할 가능성이 높고, 보안 문제와 성능 문제가 존재한다.
-
-대표적인 동적 SQL의 예시는 다음이 있다.
-
-- 자바와 DB를 연결하는 JDBC
-- 파이썬의 Python Database API
-- 여러가지 언어를 위한 ODBC
-
-**내장 SQL (embedded SQL)**
+**1. 내장 SQL (embedded SQL)**
 
 SQL 문장이 프로그램 코드에 정적으로 포함되어 있는 형태.
 
@@ -53,6 +39,19 @@ public class UserRepository {
     }
 }
 ```
+**2. 동적 SQL (dynamic SQL)** 
+
+- 실행 시점에 SQL 문장이 동적으로 생성되거나 실행되는 형태
+- SQL을 실행 시점에 생성할 수 있어 유연성이 높다.
+- 사용자 입력, 조건 등에 따라 SQL 문장이 변경될 수 있다.
+- 주로 복잡한 조건이나 다양한 사용자 입력을 처리할 때 사용된다.
+- 그러나 실행 시점에 오류가 발생할 가능성이 높고, 보안 문제와 성능 문제가 존재한다.
+
+대표적인 동적 SQL의 예시는 다음이 있다.
+
+- 자바와 DB를 연결하는 JDBC
+- 파이썬의 Python Database API
+- 여러가지 언어를 위한 ODBC
 
 예시) 자바 스프링에서의 동적 SQL
 
@@ -69,6 +68,94 @@ public interface UserMapper {
             "</script>")
     List<User> findUsers(@Param("name") String name, @Param("email") String email);
 }
+```
+
+## 내장 SQL
+
+> SQL 문장이 프로그램 코드에 정적으로 포함되어 있는 형태.
+> 
+
+SQL 질의를 내장한 언어를 호스트 언어라고 함. 
+
+그런데 호스트 언어와 SQL은 처리 방식에서 차이가 있다.
+
+- 호스트 언어 : 단일 변수 / 레코드 위주의 처리
+- SQL : 데이터 레코드 위주의 처리
+
+둘의 처리 단위가 맞지 않기 때문에 해결방법을 모색해야 했음.
+
+따라서 반복문을 이용하고, 하나의 단일 변수 / 레코드를 가리키기 위해 **커서(cursor)**라는 것을 사용.
+
+- **커서(cursor) : 한 번에 한 튜플을 가지고 오는 수단.**
+
+```c
+#include <stdio.h>      // 표준 입출력 헤더
+#include <sqlca.h>      // SQLCA(SQL Communication Area) 헤더
+
+EXEC SQL BEGIN DECLARE SECTION; // 커서 정의
+char name[] = "박영권";
+char title[10];
+EXEC SQL END DECLARE SECTION;
+
+EXEC SQL
+    DECLARE title_cursor CURSOR FOR
+    SELECT title FROM employee WHERE empname = :name;
+
+int main() {
+    // 데이터베이스에 연결 (실제 환경에서는 사용자/비밀번호 필요)
+    EXEC SQL CONNECT TO database_name USER username IDENTIFIED BY password;
+
+    // 커서 열기
+    EXEC SQL OPEN title_cursor;
+
+    // 데이터 가져오기
+    EXEC SQL FETCH title_cursor INTO :title;
+
+    // 결과 출력
+    printf("직책: %s\n", title);
+
+    // 커서 닫기
+    EXEC SQL CLOSE title_cursor;
+
+    // 데이터베이스 연결 해제
+    EXEC SQL COMMIT WORK RELEASE;
+
+    return 0;
+
+```
+
+갱신할 튜플들에 대해 커서를 정의할 때는 다음과 같이 작성한다.
+
+```sql
+FOR UPDATE OF title;
+```
+
+**SQLCA (SQL 통신 영역)**
+
+- SQL과 C를 통신해 줄 수 있는 영역
+- C 프로그램에 내포된 SQL문에 발생하는 에러들을 사용자에게 알려줌
+- 예시 : SQLCA 중 가장 널리 사용되는 SQLCODE 변수
+
+```c
+#include <stdio.h>
+#include <sqlca.h> // 오라클DB 전용 내장 SQL을 위한 헤더
+
+EXEC SQL DECLARE cl CURSOR FOR
+    SELECT empno, empname, title, manager, salary, dno
+    FROM employee;
+
+EXEC SQL OPEN cl;
+while (SQLCODE == 0)
+{
+    /* 데이터를 성공적으로 가져올 수 있으면 SQLCODE의 값이 0이다. */
+    EXEC SQL
+        FETCH cl INTO :eno, :name, :title, :manager, :salary, :dno;
+
+    if (SQLCODE == 0)
+        printf("%4d %12s %12s %4d %8d %2d\n",
+               eno, name, title, manager, salary, dno);
+}
+EXEC SQL CLOSE cl;
 ```
 
 ## 동적 SQL : JDBC
