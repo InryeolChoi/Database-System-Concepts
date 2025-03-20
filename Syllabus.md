@@ -15,8 +15,9 @@
 
 ## PART2
 `데이터베이스 설계에 대한 단원.` 
-[chapter6](./PART2/chapter6_1.md) : ERD 설계 (1)
-[chapter6](./PART2/chapter6_2.md) : ERD 설계 (2)
+[chapter6 (1)](./PART2/chapter6_1.md) : ERD 설계 (1)
+[chapter6 (2)](./PART2/chapter6_2.md) : ERD 설계 (2)
+[chapter6 (3)](./PART2/chapter6_3.md) : ERD 설계 (2)
 [chapter7](./PART2/chapter7.md) : 관계형 DB 설계
 
 ## PracticeSet
