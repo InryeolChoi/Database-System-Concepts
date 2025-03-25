@@ -18,7 +18,8 @@
 [chapter6 (1)](./PART2/chapter6_1.md) : ERD 설계 (1)
 [chapter6 (2)](./PART2/chapter6_2.md) : ERD 설계 (2)
 [chapter6 (3)](./PART2/chapter6_3.md) : ERD 설계 (2)
-[chapter7](./PART2/chapter7.md) : 관계형 DB 설계
+[chapter7 (1)](./PART2/chapter7_1.md) : 관계형 DB 설계 (1)
+[chapter7 (2)](./PART2/chapter7_2.md) : 관계형 DB 설계 (2)
 
 ## PracticeSet
 `연습문제를 풀어본 기록`
