@@ -21,6 +21,9 @@
 [chapter7 (1)](./PART2/chapter7_1.md) : 관계형 DB 설계 (1)
 [chapter7 (2)](./PART2/chapter7_2.md) : 관계형 DB 설계 (2)
 
+## PART3
+
+
 ## PracticeSet
 `연습문제를 풀어본 기록`
 [chapter2](./PracticeSet/chapter2.md) : 관계형 모델이란?  
