@@ -19,6 +19,9 @@
 * [chapter7 (2)](./PART2/chapter7_2.md) : 관계형 DB 설계 (2)  
 
 ## PART3
+* [chapter8](./PART3/chapter8.md) : 복합 데이터 타입
+
+
 
 ## PracticeSet
 `연습문제를 풀어본 기록`  
