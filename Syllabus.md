@@ -20,8 +20,9 @@
 
 ## PART3
 * [chapter8](./PART3/chapter8.md) : 복합 데이터 타입
+* 9단원은 생략.
 
-
+## PART4
 
 ## PracticeSet
 `연습문제를 풀어본 기록`  
