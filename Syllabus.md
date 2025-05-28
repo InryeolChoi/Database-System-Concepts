@@ -23,6 +23,12 @@
 * 9단원은 생략.
 
 ## PART4
+* [chapter10](./PART4/chapter10.md) : 빅데이터 다루기
+* 11단원은 생략.
+
+## PART5
+* [chapter12](./PART5/chapter12.md) : 물리적 저장장치
+* [chapter13](./PART5/chapter13.md) : DB 저장장치 구조
 
 ## PracticeSet
 `연습문제를 풀어본 기록`  
