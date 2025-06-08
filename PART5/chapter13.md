@@ -144,7 +144,9 @@ end
 
 **🧩 예시 (그림 13.5 기반)**
 
-![스크린샷 2025-05-20 오전 12.01.10.png](attachment:55b3f497-ae0b-48bb-9c20-199df0456714:스크린샷_2025-05-20_오전_12.01.10.png)
+<div align="center">
+    <img src="./Images/chapter13_1.png">
+</div>
 
 - instructor 레코드:
     - ID, name, dept_name → 가변 길이 문자열
@@ -170,7 +172,9 @@ end
 
 **슬롯 페이지 구조 (Slotted-Page Structure)**
 
-![스크린샷 2025-05-20 오전 12.04.03.png](attachment:7ecb00a6-8744-41f3-8aad-809ccaf94a20:스크린샷_2025-05-20_오전_12.04.03.png)
+<div align="center">
+    <img src="./Images/chapter13_2.png">
+</div>
 
 각 블록의 **헤더(header)**에 다음 정보 포함:
 
@@ -293,10 +297,10 @@ end
 
 - 3비트를 사용해 저장 시 → 값 7이면, **7/8 이상 공간이 비어 있음**
 
-![스크린샷 2025-05-21 오전 12.32.13.png](attachment:6eee65c1-c405-4949-9425-59a45f4330d1:스크린샷_2025-05-21_오전_12.32.13.png)
-
-![스크린샷 2025-05-21 오전 12.32.25.png](attachment:f513f6b2-9aa5-48b2-9c79-d2236a15ee27:스크린샷_2025-05-21_오전_12.32.25.png)
-
+<div align="center">
+  <img src="./Images/chapter13_3.png">
+  <img src="./Images/chapter13_4.png">
+</div>
 **📦 삽입 시 처리 과정**
 
 1. **free-space map을 탐색**해 충분한 공간이 있는 블록을 찾음
@@ -343,7 +347,9 @@ end
 - 또한 **물리적으로도 가능한 한 검색 키 순서로 저장**하여 블록 접근 횟수를 최소화함
 - ex) 교수(instructor) 테이블에서 ID를 검색 키로 사용할 경우, ID 순으로 정렬된 레코드들 + 각 레코드는 다음 ID로 연결됨 (그림 13.7 참조)
 
-![스크린샷 2025-05-26 오후 11.57.15.png](attachment:628e1f73-9049-4dd8-9614-399b410b482d:스크린샷_2025-05-26_오후_11.57.15.png)
+<div align="center">
+  <img src="./Images/chapter13_5.png">
+</div>
 
 **🧾 활용 예**
 
@@ -363,8 +369,9 @@ end
     - 어쨌든 포인터를 **검색 키 순서대로 재조정**
 
 🧩 결과적으로 삽입은 빠르게 가능하지만, **물리적 순서와 논리적 순서가 불일치**하게 됨 (그림 13.8 참고)
-
-![image.png](attachment:c821e178-f0fb-48ca-9465-a0360e6aafe5:image.png)
+<div align="center">
+  <img src="./Images/chapter13_6.png">
+</div>
 
 **⏳ 시간이 지남에 따라 발생하는 문제**
 
@@ -723,7 +730,9 @@ end
 - 열 지향 저장: ID 파일, name 파일, dept_name 파일, salary 파일 각각 존재
 ```
 
-![image.png](attachment:b2fea2df-d72d-4dbf-be44-146de2205eeb:image.png)
+<div align="center">
+  <img src="./Images/chapter13_7.png">
+</div>
 
 **📁 열 지향 저장의 기본 특징**
 
