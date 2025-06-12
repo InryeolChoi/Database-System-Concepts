@@ -171,7 +171,6 @@ end
 - 공간 절약 가능, 대신 속성 추출 시 연산 증가
 
 **슬롯 페이지 구조 (Slotted-Page Structure)**
-
 <div align="center">
     <img src="./Images/chapter13_2.png">
 </div>
@@ -296,7 +295,6 @@ end
 **📌 예시**
 
 - 3비트를 사용해 저장 시 → 값 7이면, **7/8 이상 공간이 비어 있음**
-
 <div align="center">
   <img src="./Images/chapter13_3.png">
   <img src="./Images/chapter13_4.png">
@@ -350,7 +348,6 @@ end
 <div align="center">
   <img src="./Images/chapter13_5.png">
 </div>
-
 **🧾 활용 예**
 
 - **정렬된 출력**이 필요한 경우 (예: 화면 표시)

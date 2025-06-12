@@ -99,9 +99,10 @@
 | 장점 | **조회 성능이 좋다.** | 공간 효율성이 좋고, 유지비가 적음 |
 | 단점 | 공간을 많이 차지하고, 갱신이 어려움 | 조회 속도가 느림 |
 
-![스크린샷 2025-06-11 오후 11.17.34.png](attachment:18dd5148-ade4-4e76-a948-7b73069466ee:스크린샷_2025-06-11_오후_11.17.34.png)
-
-![스크린샷 2025-06-11 오후 11.17.56.png](attachment:411ecb69-d12d-4ffc-9f13-5ed65aa5a2a5:스크린샷_2025-06-11_오후_11.17.56.png)
+<div align="center">
+  <img src="./Images/chapter14_1_1.png">
+  <img src="./Images/chapter14_1_2.png">
+</div>
 
 **📌 사용 예시 1: ID가 Primary Key인 경우**
 
@@ -131,9 +132,10 @@
 - 단일 인덱스 - 인덱스가 1개만 존재하는 경우
 - 다단계 인덱스 - 인덱스가 여러 개 존재하며, 서로 간의 관계가 있는 경우
 
-![image.png](attachment:cc1e4df0-346d-42cb-a21b-99a6b6a6bc56:41d1a142-8eca-4076-a397-2106ed002e91.png)
-
-![image.png](attachment:95f7114d-1cd6-46a6-bd1f-00f499992de4:image.png)
+<div align="center">
+    <img src="./Images/chapter14_1_3.png">
+    <img src="./Images/chapter14_1_4.png">
+</div>
 
 **단일 인덱스의 한계**
 
@@ -259,7 +261,9 @@ ex. **1,000,000개의 레코드**에 대해 dense index를 만든다고 하자.
 - 인덱스가 직접 레코드를 가리키는 것이 아니라, **버킷(bucket)** 을 가리킴. 각 버킷은 다시 여러 레코드 포인터들을 담고 있음.
 - 아래의 그림이 대표적인 예시
 
-![]()
+<div align='center'>
+    <img src="./Images/chapter14_1_5.png">
+</div>
 
 그러나 이러한 방법에는 여러가지 단점이 존재한다.
 
