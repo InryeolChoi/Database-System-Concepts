@@ -29,7 +29,6 @@
 ## PART5
 * [chapter12](./PART5/chapter12.md) : 물리적 저장장치
 * [chapter13](./PART5/chapter13.md) : DB 저장장치 구조
-* [chapter14](./PART5/chapter14.md) : 인덱싱
 
 ## PracticeSet
 `연습문제를 풀어본 기록`  
